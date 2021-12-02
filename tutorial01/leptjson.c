@@ -2,6 +2,7 @@
 #include <assert.h>  /* assert() */
 #include <stdlib.h>  /* NULL */
 
+
 #define EXPECT(c, ch)       do { assert(*c->json == (ch)); c->json++; } while(0)
 
 typedef struct {
@@ -17,11 +18,15 @@ static void lept_parse_whitespace(lept_context* c) {
 
 static int lept_parse_null(lept_context* c, lept_value* v) {
     EXPECT(c, 'n');
-    if (c->json[0] != 'u' || c->json[1] != 'l' || c->json[2] != 'l')
+    if (c->json[0] != 'u' || c->json[1] != 'l' || c->json[2] != 'l'){
         return LEPT_PARSE_INVALID_VALUE;
+    }else if(c->json[3] != '\0'){
+        return LEPT_PARSE_ROOT_NOT_SINGULAR;
+    }
+
     c->json += 3;
     v->type = LEPT_NULL;
-    return LEPT_PARSE_OK;
+    return c->json[1] == LEPT_PARSE_OK;
 }
 
 static int lept_parse_value(lept_context* c, lept_value* v) {
